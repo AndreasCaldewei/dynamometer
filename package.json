@@ -1,5 +1,5 @@
 {
-  "name": "dynometer",
+  "name": "dynamometer",
   "version": "0.0.0-development",
   "description": "A library to easily work with DynamoDB with a single table design approach.",
   "main": "./lib/src/index.js",
@@ -20,11 +20,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ryansonshine/YOUR_REPOSITORY.git"
+    "url": "git+https://github.com/AndreasCaldewei/dynamometer"
   },
   "license": "MIT",
   "author": {
-    "name": "Andreas Caldewei",
+    "name": "AndreasCaldewei",
     "url": "https://github.com/AndreasCaldewei"
   },
   "engines": {
@@ -34,9 +34,9 @@
     "dynamodb"
   ],
   "bugs": {
-    "url": "https://github.com/ryansonshine/dynometer/issues"
+    "url": "https://github.com/AndreasCaldewei/dynamometer/issues"
   },
-  "homepage": "https://github.com/ryansonshine/dynometer#readme",
+  "homepage": "https://github.com/AndreasCaldewei/dynamometer#readme",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.87.0",
     "@aws-sdk/lib-dynamodb": "^3.87.0",

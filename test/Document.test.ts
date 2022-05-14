@@ -1,6 +1,6 @@
 import { Dynamometer } from '../src';
-import { deleteTable } from './utils /deleteTable';
-import { createTable } from './utils /createTable';
+import { deleteTable } from './utils/deleteTable';
+import { createTable } from './utils/createTable';
 
 describe('Document ', () => {
   const tableName = 'Test';
