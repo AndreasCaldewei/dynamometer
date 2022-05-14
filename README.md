@@ -164,7 +164,9 @@ const response = await doc.delete()
 
 [semantic-release-url]:https://github.com/semantic-release/semantic-release
 
+[commitizen-url]:http://commitizen.github.io/cz-cli/
+
+
 [commitizen-img]:https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
 
-[commitizen-url]:http://commitizen.github.io/cz-cli/
 
