@@ -1,59 +1,4 @@
-# typescript-npm-package-template
-
-> Template to kickstart creating a Node.js module using TypeScript and VSCode
-
-Inspired by [node-module-boilerplate](https://github.com/sindresorhus/node-module-boilerplate)
-
-## Features
-
-- [Semantic Release](https://github.com/semantic-release/semantic-release)
-- [Issue Templates](https://github.com/AndreasCaldewei/typescript-npm-package-template/tree/main/.github/ISSUE_TEMPLATE)
-- [GitHub Actions](https://github.com/AndreasCaldewei/typescript-npm-package-template/tree/main/.github/workflows)
-- [Codecov](https://about.codecov.io/)
-- [VSCode Launch Configurations](https://github.com/AndreasCaldewei/typescript-npm-package-template/blob/main/.vscode/launch.json)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Husky](https://github.com/typicode/husky)
-- [Lint Staged](https://github.com/okonet/lint-staged)
-- [Commitizen](https://github.com/search?q=commitizen)
-- [Jest](https://jestjs.io/)
-- [ESLint](https://eslint.org/)
-- [Prettier](https://prettier.io/)
-
-## Getting started
-
-### Set up your repository
-
-**Click the "Use this template" button.**
-
-Alternatively, create a new directory and then run:
-
-```bash
-curl -fsSL https://github.com/AndreasCaldewei/typescript-npm-package-template/archive/main.tar.gz | tar -xz --strip-components=1
-```
-
-Replace `FULL_NAME`, `GITHUB_USER`, and `REPO_NAME` in the script below with your own details to personalize your new package:
-
-```bash
-FULL_NAME="John Smith"
-GITHUB_USER="johnsmith"
-REPO_NAME="my-cool-package"
-sed -i.mybak "s/AndreasCaldewei/$GITHUB_USER/g; s/typescript-npm-package-template\|my-package-name/$REPO_NAME/g; s/Andreas Caldewei/$FULL_NAME/g" package.json package-lock.json README.md
-rm *.mybak
-```
-
-### Add NPM Token
-
-Add your npm token to your GitHub repository secrets as `NPM_TOKEN`.
-
-### Add Codecov integration
-
-Enable the Codecov GitHub App [here](https://github.com/apps/codecov).
-
-**Remove everything from here and above**
-
----
-
-# my-package-name
+# Dynamometer
 
 [![npm package][npm-img]][npm-url]
 [![Build Status][build-img]][build-url]
@@ -63,55 +8,162 @@ Enable the Codecov GitHub App [here](https://github.com/apps/codecov).
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 
-> My awesome module
+> A library to easily work with DynamoDB and enforces single table design approach.
+
+
+Inspired by [Firestore SDK](https://firebase.google.com/docs/firestore).
+
+```ts
+const db = Dynamometer.create({
+  tableName: "dataTable"
+})
+
+db.collection('USERS')
+  .doc("xspvLRiJ")
+  .collection("TODOS")
+  .add({
+    text: "Makes managing your data a breeze."
+  })
+
+```
+
+## Features
+
+- Easy to use API to query and create items in DynamoDB.
+- Data is automatically structured in single table design.
+
+---
 
 ## Install
 
 ```bash
-npm install my-package-name
+npm install dynamometer
 ```
 
 ## Usage
 
 ```ts
-import { myPackage } from 'my-package-name';
+import { Dynamometer } from 'dynamometer';
 
-myPackage('hello');
-//=> 'hello from my package'
+const db = Dynamometer.create({
+  tableName: "dataTable"
+})
 ```
 
-## API
+---
 
-### myPackage(input, options?)
+### Collection
 
-#### input
+A collection holds a number of items.
 
-Type: `string`
+#### Creating a collection
 
-Lorem ipsum.
+```ts
+const collection = db.collection("USERS")
+```
 
-#### options
+With a collection, items can be added to it or all can be queried.
 
-Type: `object`
+#### Adding  an item
 
-##### postfix
+```ts
 
-Type: `string`
-Default: `rainbows`
+collection.add({
+  name: "John Doe"
+})
 
-Lorem ipsum.
+```
 
-[build-img]:https://github.com/AndreasCaldewei/typescript-npm-package-template/actions/workflows/release.yml/badge.svg
-[build-url]:https://github.com/AndreasCaldewei/typescript-npm-package-template/actions/workflows/release.yml
-[downloads-img]:https://img.shields.io/npm/dt/typescript-npm-package-template
-[downloads-url]:https://www.npmtrends.com/typescript-npm-package-template
-[npm-img]:https://img.shields.io/npm/v/typescript-npm-package-template
-[npm-url]:https://www.npmjs.com/package/typescript-npm-package-template
-[issues-img]:https://img.shields.io/github/issues/AndreasCaldewei/typescript-npm-package-template
-[issues-url]:https://github.com/AndreasCaldewei/typescript-npm-package-template/issues
-[codecov-img]:https://codecov.io/gh/AndreasCaldewei/typescript-npm-package-template/branch/main/graph/badge.svg
-[codecov-url]:https://codecov.io/gh/AndreasCaldewei/typescript-npm-package-template
+#### Query all Items
+
+```ts
+
+const reponse = await collection.get()
+
+```
+
+#### Doc
+
+If you know the ID of an item in the collection or you want to give it your own ID you can use the doc methode.
+
+```ts
+// get the doc
+collection.doc("123").get()
+
+// add the doc with the id 123
+collection.doc("123").add({
+  name: "John Doe"
+})
+```
+
+---
+
+### Document
+
+A document is an item of a collection. It offers CRUD methodes.
+
+#### Doc
+
+If you know the ID of an item in the collection or you want to give it your own ID you can use the doc methode.
+
+#### Creating a document
+
+```ts
+const doc = db.collection("USERS").doc("123")
+```
+
+#### Set doc data
+
+```ts
+ const repsonse = await doc.set({
+  name: "John Doe"
+})
+```
+
+#### Get doc data
+
+```ts
+const data = await doc.get()
+```
+
+#### Update doc
+
+```ts
+const response = await doc.update({
+  name: "John Doester"
+})
+```
+
+#### Delete doc
+
+```ts
+const response = await doc.delete()
+```
+
+[build-img]:https://github.com/AndreasCaldewei/dynamometer/actions/workflows/release.yml/badge.svg
+
+[build-url]:https://github.com/AndreasCaldewei/dynamometer/actions/workflows/release.yml
+
+[downloads-img]:https://img.shields.io/npm/dt/dynamometer
+
+[downloads-url]:https://www.npmtrends.com/dynamometer
+
+[npm-img]:https://img.shields.io/npm/v/dynamometer
+
+[npm-url]:https://www.npmjs.com/package/dynamometer
+
+[issues-img]:https://img.shields.io/github/issues/AndreasCaldewei/dynamometer
+
+[issues-url]:https://github.com/AndreasCaldewei/dynamometer/issues
+
+[codecov-img]:https://codecov.io/gh/AndreasCaldewei/dynamometer/branch/main/graph/badge.svg
+
+[codecov-url]:https://codecov.io/gh/AndreasCaldewei/dynamometer
+
 [semantic-release-img]:https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
+
 [semantic-release-url]:https://github.com/semantic-release/semantic-release
+
 [commitizen-img]:https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
+
 [commitizen-url]:http://commitizen.github.io/cz-cli/
