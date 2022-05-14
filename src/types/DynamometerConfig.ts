@@ -7,6 +7,6 @@ export type DynamometerConfig = {
   partitionKey?: string;
   sortKey?: string;
   translateConfig?: TranslateConfig;
-  dynamoDBClientConfig: DynamoDBClientConfig;
+  dynamoDBClientConfig?: DynamoDBClientConfig;
   uuidFunction?: () => string;
 };

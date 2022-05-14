@@ -1,5 +1,5 @@
 module.exports = {
-  ignorePatterns: ['*.test.ts', 'test/**/*.ts', './test/**/*.ts'],
+  ignorePatterns: ['*.test.ts', 'test/**/*.ts', 'examples/**/*.ts'],
 
   root: true,
   parser: '@typescript-eslint/parser',

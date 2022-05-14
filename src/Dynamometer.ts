@@ -22,7 +22,7 @@ export class Dynamometer {
   }
 
   private createDocumentClient(config: DynamometerConfig) {
-    const client = new DynamoDBClient(config.dynamoDBClientConfig);
+    const client = new DynamoDBClient(config.dynamoDBClientConfig!);
     return DynamoDBDocument.from(client, config.translateConfig);
   }
 }
