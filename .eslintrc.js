@@ -1,4 +1,6 @@
 module.exports = {
+  ignorePatterns: ['*.test.ts', 'test/**/*.ts', './test/**/*.ts'],
+
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'node', 'prettier'],
