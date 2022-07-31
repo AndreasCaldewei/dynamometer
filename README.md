@@ -1,4 +1,11 @@
-# Dynamometer
+<p align="center">
+  <img src="logo.svg" width="200px" align="center" alt="Dynamometer logo" />
+  <h1 align="center">Dynamometer</h1>
+  <p align="center">
+    <br/>
+    Enforces single table design on your DynamoDB queries in an elegant way.  
+  </p>
+</p>
 
 [![npm package][npm-img]][npm-url]
 [![Build Status][build-img]][build-url]
@@ -8,39 +15,38 @@
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 
-> A library to easily work with DynamoDB and enforces single table design approach.
+# Introduction
 
+---
+Managing your data with a single design approach in DynamodDB can sometimes be difficult. Dynamometer uses so-called "
+Collections" and "Docs" to structure your data in an comprehensible way.
 
-Inspired by [Firestore SDK](https://firebase.google.com/docs/firestore).
+Dynamometer is intended for simple, low-complexity projects and is designed to allow an architect to immediately take a
+single-table approach with a DynamoDB table without having to think much about access patterns.
 
-```ts
-const db = Dynamometer.create({
-  tableName: "dataTable"
-})
-
-db.collection('USERS')
-  .doc("xspvLRiJ")
-  .collection("TODOS")
-  .add({
-    text: "Makes managing your data a breeze."
-  })
-
-```
-
-## Features
-
-- Easy to use API to query and create items in DynamoDB.
-- Data is automatically structured in single table design.
+# Features
 
 ---
 
-## Install
+- Easy to use API to query and create items in DynamoDB.
+- Data is automatically structured in single table design.
+  `
+
+# Install
+
+---
 
 ```bash
-npm install dynamometer
+npm install dynamometer       # npm
+yarn add dynamometer          # yarn
+pnpm add dynamometer          # pnpm
 ```
 
-## Usage
+# Basic usage
+
+---
+
+Create a instance of the dynamometer client.
 
 ```ts
 import { Dynamometer } from 'dynamometer';
@@ -165,7 +171,6 @@ const response = await doc.delete()
 [semantic-release-url]:https://github.com/semantic-release/semantic-release
 
 [commitizen-url]:http://commitizen.github.io/cz-cli/
-
 
 [commitizen-img]:https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
 
