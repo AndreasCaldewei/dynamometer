@@ -17,10 +17,7 @@ export class Dynamometer {
     return new Dynamometer(config);
   }
 
-  collection<T>(
-    collectionPath: string,
-    args?: CollectionArgs
-  ): Collection<T, any> {
+  collection<T>(collectionPath: string, args?: CollectionArgs): Collection<T> {
     return new Collection(this, collectionPath);
   }
 
