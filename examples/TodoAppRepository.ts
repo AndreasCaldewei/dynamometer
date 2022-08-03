@@ -12,9 +12,9 @@ const db = Dynamometer.create({
   tableName: 'test',
 });
 
-const userCol = () => db.collection('USERS');
+const userCol = () => db.collection<User>('USERS');
 const todoCol = (userId: string) =>
-  db.collection('USERS').doc(userId).collection('TODOS');
+  db.collection('USERS').doc(userId).collection<Todo>('TODOS');
 
 // USERS
 export const getUsers = () => {

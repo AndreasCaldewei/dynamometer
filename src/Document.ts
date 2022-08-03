@@ -3,18 +3,13 @@ import { Dynamometer } from './Dynamometer';
 import { CollectionArgs } from './types/CollectionArgs';
 import { merge } from 'lodash';
 import { checkDocumentPath } from './utils/checkDocumentPath';
-import {
-  DeleteCommandOutput,
-  GetCommandOutput,
-  PutCommandOutput,
-} from '@aws-sdk/lib-dynamodb';
 
-export class Document {
+export class Document<T> {
   constructor(
     readonly dynamometer: Dynamometer,
     private readonly _path: string,
     readonly id: string,
-    readonly parent: Collection
+    readonly parent: Collection<T>
   ) {
     checkDocumentPath(this.path, dynamometer.config.delimiter!);
   }
@@ -23,8 +18,11 @@ export class Document {
     return `${this._path}${this.dynamometer.config.delimiter!}${this.id}`;
   }
 
-  collection(collectionPath: string, args?: CollectionArgs): Collection {
-    return new Collection(
+  collection<Type>(
+    collectionPath: string,
+    args?: CollectionArgs
+  ): Collection<Type> {
+    return new Collection<Type>(
       this.dynamometer,
       `${this.path}${this.dynamometer.config.delimiter!}${collectionPath}`,
       this,
@@ -32,18 +30,20 @@ export class Document {
     );
   }
 
-  get(): Promise<GetCommandOutput> {
-    return this.dynamometer.ddbDocClient.get({
+  async get(): Promise<T> {
+    const response = await this.dynamometer.ddbDocClient.get({
       TableName: this.dynamometer.config.tableName,
       Key: {
         [this.dynamometer.config.partitionKey!]: this._path,
         [this.dynamometer.config.sortKey!]: this.id,
       },
     });
+
+    return response.Item as T;
   }
 
-  set(data: any): Promise<PutCommandOutput> {
-    return this.dynamometer.ddbDocClient.put({
+  async set(data: any): Promise<void> {
+    await this.dynamometer.ddbDocClient.put({
       TableName: this.dynamometer.config.tableName,
       Item: {
         [this.dynamometer.config.partitionKey!]: this._path,
@@ -53,8 +53,8 @@ export class Document {
     });
   }
 
-  delete(): Promise<DeleteCommandOutput> {
-    return this.dynamometer.ddbDocClient.delete({
+  async delete(): Promise<void> {
+    const response = await this.dynamometer.ddbDocClient.delete({
       TableName: this.dynamometer.config.tableName,
       Key: {
         [this.dynamometer.config.partitionKey!]: this._path,
@@ -63,8 +63,8 @@ export class Document {
     });
   }
 
-  async update(data: any): Promise<PutCommandOutput> {
+  async update(data: any): Promise<void> {
     const response = await this.get();
-    return await this.set(merge(response.Item, data));
+    await this.set(merge(response, data));
   }
 }

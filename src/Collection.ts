@@ -3,22 +3,21 @@ import { Document } from './Document';
 import { CollectionArgs } from './types/CollectionArgs';
 import { Dynamometer } from './Dynamometer';
 import { checkCollectionPath } from './utils/checkCollectionPath';
-import { PutCommandOutput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb';
 
-export class Collection {
+export class Collection<T, Parent extends Collection<T> = any> {
   private beginsWithValue!: string;
 
   constructor(
     private readonly dynamometer: Dynamometer,
     readonly path: string,
-    parent?: Document,
+    public parent?: Document<T>,
     private readonly args?: CollectionArgs
   ) {
     checkCollectionPath(path, dynamometer.config.delimiter!);
   }
 
-  get(): Promise<QueryCommandOutput> {
-    return this.dynamometer.ddbDocClient.query({
+  async get(): Promise<Array<T>> {
+    const response = await this.dynamometer.ddbDocClient.query({
       TableName: this.dynamometer.config.tableName,
       KeyConditionExpression: `#PK = :PK${
         this.beginsWithValue ? ' and begins_with(#SK, :SK)' : ''
@@ -32,20 +31,21 @@ export class Collection {
         ...(this.beginsWithValue && { ':SK': this.beginsWithValue }),
       },
     });
+    return response.Items as T[];
   }
 
-  beginsWith(sortKeyBeginsWith: string): Collection {
+  beginsWith(sortKeyBeginsWith: string): Collection<T, Parent> {
     this.beginsWithValue = sortKeyBeginsWith;
     return this;
   }
 
   doc(
     id: string = createUUID(this.dynamometer?.config?.uuidFunction)
-  ): Document {
+  ): Document<T> {
     return new Document(this.dynamometer, this.path, this.createId(id), this);
   }
 
-  async add(data: any): Promise<PutCommandOutput & { doc: Document }> {
+  async add(data: any): Promise<Document<T>> {
     const uuid = createUUID(this.dynamometer?.config?.uuidFunction);
     const response = await this.dynamometer.ddbDocClient.put({
       TableName: this.dynamometer.config.tableName,
@@ -55,10 +55,7 @@ export class Collection {
         [this.dynamometer.config.sortKey!]: this.createId(uuid),
       },
     });
-    return {
-      ...response,
-      doc: new Document(this.dynamometer, this.path, uuid, this),
-    };
+    return new Document<T>(this.dynamometer, this.path, uuid, this);
   }
 
   private createId(id: string): string {
