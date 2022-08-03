@@ -2,8 +2,8 @@
   "name": "dynamometer",
   "version": "0.0.0-development",
   "description": "A library to easily work with DynamoDB with a single table design approach.",
-  "main": "./dist/src/index.js",
-  "types": "./dist/main.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "/dist"
   ],
@@ -84,6 +84,6 @@
     "access": "public"
   },
   "exports": {
-    "./*": "./dist/**"
+    ".": "./dist/"
   }
 }
