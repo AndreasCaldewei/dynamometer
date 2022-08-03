@@ -4,13 +4,13 @@ import { CollectionArgs } from './types/CollectionArgs';
 import { Dynamometer } from './Dynamometer';
 import { checkCollectionPath } from './utils/checkCollectionPath';
 
-export class Collection<T, Parent extends Collection<T> = any> {
+export class Collection<T> {
   private beginsWithValue!: string;
 
   constructor(
     private readonly dynamometer: Dynamometer,
     readonly path: string,
-    public parent?: Document<T>,
+    public parent?: Document<any>,
     private readonly args?: CollectionArgs
   ) {
     checkCollectionPath(path, dynamometer.config.delimiter!);
@@ -34,7 +34,7 @@ export class Collection<T, Parent extends Collection<T> = any> {
     return response.Items as T[];
   }
 
-  beginsWith(sortKeyBeginsWith: string): Collection<T, Parent> {
+  beginsWith(sortKeyBeginsWith: string): Collection<T> {
     this.beginsWithValue = sortKeyBeginsWith;
     return this;
   }
