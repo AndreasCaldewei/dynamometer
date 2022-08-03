@@ -3,7 +3,7 @@ import { Document } from './Document';
 import { CollectionArgs } from './types/CollectionArgs';
 import { Dynamometer } from './Dynamometer';
 import { checkCollectionPath } from './utils/checkCollectionPath';
-import { QueryCommandOutput } from '@aws-sdk/lib-dynamodb';
+import { PutCommandOutput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb';
 
 export class Collection {
   private beginsWithValue!: string;
@@ -45,7 +45,7 @@ export class Collection {
     return new Document(this.dynamometer, this.path, this.createId(id), this);
   }
 
-  async add(data: any) {
+  async add(data: any): Promise<PutCommandOutput & { doc: Document }> {
     const uuid = createUUID(this.dynamometer?.config?.uuidFunction);
     const response = await this.dynamometer.ddbDocClient.put({
       TableName: this.dynamometer.config.tableName,

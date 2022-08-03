@@ -13,11 +13,11 @@ export class Dynamometer {
     this.ddbDocClient = this.createDocumentClient(merge(config, BaseConfig));
   }
 
-  static create(config: DynamometerConfig) {
+  static create(config: DynamometerConfig): Dynamometer {
     return new Dynamometer(config);
   }
 
-  collection(collectionPath: string, args?: CollectionArgs) {
+  collection(collectionPath: string, args?: CollectionArgs): Collection {
     return new Collection(this, collectionPath);
   }
 

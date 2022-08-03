@@ -3,6 +3,11 @@ import { Dynamometer } from './Dynamometer';
 import { CollectionArgs } from './types/CollectionArgs';
 import { merge } from 'lodash';
 import { checkDocumentPath } from './utils/checkDocumentPath';
+import {
+  DeleteCommandOutput,
+  GetCommandOutput,
+  PutCommandOutput,
+} from '@aws-sdk/lib-dynamodb';
 
 export class Document {
   constructor(
@@ -14,11 +19,11 @@ export class Document {
     checkDocumentPath(this.path, dynamometer.config.delimiter!);
   }
 
-  get path() {
+  get path(): string {
     return `${this._path}${this.dynamometer.config.delimiter!}${this.id}`;
   }
 
-  collection(collectionPath: string, args?: CollectionArgs) {
+  collection(collectionPath: string, args?: CollectionArgs): Collection {
     return new Collection(
       this.dynamometer,
       `${this.path}${this.dynamometer.config.delimiter!}${collectionPath}`,
@@ -27,7 +32,7 @@ export class Document {
     );
   }
 
-  get() {
+  get(): Promise<GetCommandOutput> {
     return this.dynamometer.ddbDocClient.get({
       TableName: this.dynamometer.config.tableName,
       Key: {
@@ -37,7 +42,7 @@ export class Document {
     });
   }
 
-  set(data: any) {
+  set(data: any): Promise<PutCommandOutput> {
     return this.dynamometer.ddbDocClient.put({
       TableName: this.dynamometer.config.tableName,
       Item: {
@@ -48,7 +53,7 @@ export class Document {
     });
   }
 
-  delete() {
+  delete(): Promise<DeleteCommandOutput> {
     return this.dynamometer.ddbDocClient.delete({
       TableName: this.dynamometer.config.tableName,
       Key: {
@@ -58,7 +63,7 @@ export class Document {
     });
   }
 
-  async update(data: any) {
+  async update(data: any): Promise<PutCommandOutput> {
     const response = await this.get();
     return await this.set(merge(response.Item, data));
   }
