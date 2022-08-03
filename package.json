@@ -3,8 +3,9 @@
   "version": "0.0.0-development",
   "description": "A library to easily work with DynamoDB with a single table design approach.",
   "main": "./lib/src/index.js",
+  "types": "./lib/main.d.ts",
   "files": [
-    "lib/**/*"
+    "/lib"
   ],
   "scripts": {
     "build": "tsc",
