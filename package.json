@@ -82,5 +82,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "exports": {
+    "./*": "./dist/**"
   }
 }
