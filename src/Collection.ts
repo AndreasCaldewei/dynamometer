@@ -3,6 +3,7 @@ import { Document } from './Document';
 import { CollectionArgs } from './types/CollectionArgs';
 import { Dynamometer } from './Dynamometer';
 import { checkCollectionPath } from './utils/checkCollectionPath';
+import { transformResponse } from './utils/transformResponse';
 
 export class Collection<T> {
   private beginsWithValue!: string;
@@ -31,7 +32,9 @@ export class Collection<T> {
         ...(this.beginsWithValue && { ':SK': this.beginsWithValue }),
       },
     });
-    return response.Items as T[];
+    return (response.Items ?? []).map(item =>
+      transformResponse<T>(item, this.dynamometer.config)
+    );
   }
 
   beginsWith(sortKeyBeginsWith: string): Collection<T> {

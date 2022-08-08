@@ -3,6 +3,7 @@ import { Dynamometer } from './Dynamometer';
 import { CollectionArgs } from './types/CollectionArgs';
 import { merge } from 'lodash';
 import { checkDocumentPath } from './utils/checkDocumentPath';
+import { transformResponse } from './utils/transformResponse';
 
 export class Document<T> {
   constructor(
@@ -39,7 +40,7 @@ export class Document<T> {
       },
     });
 
-    return response.Item as T;
+    return transformResponse<T>(response.Item, this.dynamometer.config);
   }
 
   async set(data: any): Promise<void> {

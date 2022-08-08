@@ -4,6 +4,7 @@ export const BaseConfig: Partial<DynamometerConfig> = {
   delimiter: '#',
   partitionKey: 'PK',
   sortKey: 'SK',
+  id: 'id',
   translateConfig: {
     marshallOptions: {
       convertEmptyValues: false,

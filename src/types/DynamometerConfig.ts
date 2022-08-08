@@ -9,4 +9,5 @@ export type DynamometerConfig = {
   translateConfig?: TranslateConfig;
   dynamoDBClientConfig?: DynamoDBClientConfig;
   uuidFunction?: () => string;
+  id?: string;
 };
