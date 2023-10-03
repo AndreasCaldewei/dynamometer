@@ -38,11 +38,9 @@
     "url": "https://github.com/AndreasCaldewei/dynamometer/issues"
   },
   "homepage": "https://github.com/AndreasCaldewei/dynamometer#readme",
-  "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.87.0",
-    "@aws-sdk/lib-dynamodb": "^3.87.0",
-    "lodash": "^4.17.21",
-    "uuid": "^8.3.2"
+  "peerDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.182",

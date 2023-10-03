@@ -1,22 +1,42 @@
 import { Dynamometer } from '../src';
 import { createTable } from './utils/createTable';
 import { deleteTable } from './utils/deleteTable';
+import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { delay } from './utils/delay';
 
 describe('Collection ', () => {
   const tableName = 'Test';
   let dynamometer: Dynamometer;
 
   beforeEach(async () => {
+    await delay();
     await deleteTable();
+    await delay();
     await createTable();
+    await delay();
+
     let uuidCounter = -1;
-    dynamometer = Dynamometer.create({
-      tableName,
-      dynamoDBClientConfig: {
+    const dynamoDBDocument = DynamoDBDocument.from(
+      new DynamoDBClient({
         endpoint: 'http://localhost:8000/',
         region: 'eu-central-1',
-      },
-      uuidFunction() {
+      }),
+      {
+        marshallOptions: {
+          convertEmptyValues: false,
+          removeUndefinedValues: false,
+          convertClassInstanceToMap: false,
+        },
+        unmarshallOptions: {
+          wrapNumbers: false,
+        },
+      }
+    );
+
+    dynamometer = Dynamometer.fromDynamoDBDocument(dynamoDBDocument, {
+      tableName,
+      generateId() {
         uuidCounter = uuidCounter + 1;
         return uuidCounter.toString();
       },
@@ -36,7 +56,7 @@ describe('Collection ', () => {
     const response = await commentsCollection.get();
 
     expect(commentsCollection.path).toBe('POSTS#1234#COMMENTS');
-    expect(response.Items?.length).toBe(1);
+    expect(response?.length).toBe(1);
     response.Items?.forEach((item, index) => {
       expect(item).toStrictEqual({
         PK: 'POSTS#1234#COMMENTS',
@@ -63,11 +83,10 @@ describe('Collection ', () => {
     const response = await commentsCollection.get();
 
     expect(commentsCollection.path).toBe('POSTS#1234#COMMENTS');
-    expect(response.Items?.length).toBe(2);
-    response.Items?.forEach((item, index) => {
+    expect(response?.length).toBe(2);
+    response?.forEach((item, index) => {
       expect(item).toStrictEqual({
-        PK: 'POSTS#1234#COMMENTS',
-        SK: index.toString(),
+        id: index.toString(),
         text: 'Test Comment',
       });
     });
@@ -105,11 +124,10 @@ describe('Collection ', () => {
       .get();
 
     expect(commentsCollectionPublished.path).toBe('POSTS#1234#COMMENTS');
-    expect(response.Items?.length).toBe(2);
-    response.Items?.forEach((item, index) => {
+    expect(response?.length).toBe(2);
+    response?.forEach((item, index) => {
       expect(item).toStrictEqual({
-        PK: 'POSTS#1234#COMMENTS',
-        SK: `PUBLISHED#${index.toString()}`,
+        id: `PUBLISHED#${index.toString()}`,
         text: 'Test Comment',
       });
     });

@@ -1,22 +1,42 @@
 import { Dynamometer } from '../src';
 import { deleteTable } from './utils/deleteTable';
 import { createTable } from './utils/createTable';
+import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { delay } from './utils/delay';
 
 describe('Document ', () => {
   const tableName = 'Test';
   let dynamometer: Dynamometer;
 
   beforeEach(async () => {
+    await delay();
     await deleteTable();
+    await delay();
     await createTable();
+    await delay();
+
     let uuidCounter = -1;
-    dynamometer = Dynamometer.create({
-      tableName,
-      dynamoDBClientConfig: {
+    const dynamoDBDocument = DynamoDBDocument.from(
+      new DynamoDBClient({
         endpoint: 'http://localhost:8000/',
         region: 'eu-central-1',
-      },
-      uuidFunction() {
+      }),
+      {
+        marshallOptions: {
+          convertEmptyValues: false,
+          removeUndefinedValues: false,
+          convertClassInstanceToMap: false,
+        },
+        unmarshallOptions: {
+          wrapNumbers: false,
+        },
+      }
+    );
+
+    dynamometer = Dynamometer.fromDynamoDBDocument(dynamoDBDocument, {
+      tableName,
+      generateId() {
         uuidCounter = uuidCounter + 1;
         return uuidCounter.toString();
       },
@@ -36,9 +56,8 @@ describe('Document ', () => {
 
     const response = await doc.get();
 
-    expect(response.Item).toStrictEqual({
-      PK: 'POSTS',
-      SK: '1234',
+    expect(response).toStrictEqual({
+      id: '1234',
       test: 'test',
     });
   });
@@ -49,9 +68,8 @@ describe('Document ', () => {
       name: 'test',
     });
     const response = await doc.get();
-    expect(response.Item).toStrictEqual({
-      PK: 'POSTS',
-      SK: '1234',
+    expect(response).toStrictEqual({
+      id: '1234',
       name: 'test',
     });
   });
@@ -63,7 +81,7 @@ describe('Document ', () => {
     });
     await doc.delete();
     const response = await doc.get();
-    expect(response.Item).toBe(undefined);
+    expect(response).toBe(null);
   });
 
   test('update', async () => {
@@ -77,9 +95,8 @@ describe('Document ', () => {
       property: 'property',
     });
     const response = await doc.get();
-    expect(response.Item).toStrictEqual({
-      PK: 'POSTS',
-      SK: '1234',
+    expect(response).toStrictEqual({
+      id: '1234',
       name: 'name',
       property: 'property',
       text: 'test',
@@ -104,9 +121,8 @@ describe('Document ', () => {
       },
     });
     const response = await doc.get();
-    expect(response.Item).toStrictEqual({
-      PK: 'POSTS',
-      SK: '1234',
+    expect(response).toStrictEqual({
+      id: '1234',
       name: 'name',
       property: 'property',
       obj: {

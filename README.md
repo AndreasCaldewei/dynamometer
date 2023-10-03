@@ -1,40 +1,28 @@
-<p align="center">
-  <img src="logo.svg" width="200px" align="center" alt="Dynamometer logo" />
-  <h1 align="center">Dynamometer</h1>
-  <p align="center">
-    <br/>
-    Enforces single table design on your DynamoDB queries in an elegant way.  
-  </p>
-</p>
 
-[![npm package][npm-img]][npm-url]
-[![Build Status][build-img]][build-url]
-[![Downloads][downloads-img]][downloads-url]
-[![Issues][issues-img]][issues-url]
-[![Code Coverage][codecov-img]][codecov-url]
-[![Commitizen Friendly][commitizen-img]][commitizen-url]
-[![Semantic Release][semantic-release-img]][semantic-release-url]
+# Dynamometer
 
-# Introduction
+![Dynamometer Logo](logo.svg)
 
----
-Managing your data with a single design approach in DynamodDB can sometimes be difficult. Dynamometer uses so-called "
-Collections" and "Docs" to structure your data in an comprehensible way.
+Dynamometer simplifies the use of a single table design in your DynamoDB queries.
 
-Dynamometer is intended for simple, low-complexity projects and is designed to allow an architect to immediately take a
-single-table approach with a DynamoDB table without having to think much about access patterns.
+- [npm package](https://www.npmjs.com/package/dynamometer)
+- [Build Status](https://github.com/AndreasCaldewei/dynamometer/actions/workflows/release.yml)
+- [Downloads](https://www.npmtrends.com/dynamometer)
+- [Issues](https://github.com/AndreasCaldewei/dynamometer/issues)
+- [Code Coverage](https://codecov.io/gh/AndreasCaldewei/dynamometer)
+- [Semantic Release](https://github.com/semantic-release/semantic-release)
+- [Commitizen Friendly](http://commitizen.github.io/cz-cli/)
 
-# Features
+## Introduction
 
----
+Using a single design approach in DynamoDB can be challenging. Dynamometer introduces "Collections" and "Docs" to make your data more understandable. It's perfect for simple projects, allowing you to adopt a single-table approach without diving deep into access patterns.
 
-- Easy to use API to query and create items in DynamoDB.
-- Data is automatically structured in single table design.
-  `
+## Features
 
-# Install
+- User-friendly API for querying and creating DynamoDB items.
+- Automatic structuring of data in a single table design.
 
----
+## Installation
 
 ```bash
 npm install dynamometer       # npm
@@ -42,136 +30,71 @@ yarn add dynamometer          # yarn
 pnpm add dynamometer          # pnpm
 ```
 
-# Basic usage
+## Basic Usage
 
----
-
-Create a instance of the dynamometer client.
+### Setting Up
 
 ```ts
 import { Dynamometer } from 'dynamometer';
 
 const db = Dynamometer.create({
   tableName: "dataTable"
-})
+});
 ```
 
----
+### Collections
 
-### Collection
+Collections contain multiple items.
 
-A collection holds a number of items.
-
-#### Creating a collection
-
+**Creating a Collection:**
 ```ts
-const collection = db.collection("USERS")
+const collection = db.collection("USERS");
 ```
 
-With a collection, items can be added to it or all can be queried.
-
-#### Adding  an item
-
+**Adding an Item:**
 ```ts
-
 collection.add({
   name: "John Doe"
-})
-
+});
 ```
 
-#### Query all Items
-
+**Querying All Items:**
 ```ts
-
-const reponse = await collection.get()
-
+const response = await collection.get();
 ```
 
-#### Doc
+### Documents
 
-If you know the ID of an item in the collection or you want to give it your own ID you can use the doc methode.
+A document is an individual item within a collection.
 
+**Accessing a Document by ID:**
 ```ts
-// get the doc
-collection.doc("123").get()
+const doc = db.collection("USERS").doc("123");
+```
 
-// add the doc with the id 123
-collection.doc("123").add({
+**Setting Document Data:**
+```ts
+const response = await doc.set({
   name: "John Doe"
-})
+});
 ```
 
----
-
-### Document
-
-A document is an item of a collection. It offers CRUD methodes.
-
-#### Doc
-
-If you know the ID of an item in the collection or you want to give it your own ID you can use the doc methode.
-
-#### Creating a document
-
+**Retrieving Document Data:**
 ```ts
-const doc = db.collection("USERS").doc("123")
+const data = await doc.get();
 ```
 
-#### Set doc data
-
-```ts
- const repsonse = await doc.set({
-  name: "John Doe"
-})
-```
-
-#### Get doc data
-
-```ts
-const data = await doc.get()
-```
-
-#### Update doc
-
+**Updating a Document:**
 ```ts
 const response = await doc.update({
   name: "John Doester"
-})
+});
 ```
 
-#### Delete doc
-
+**Deleting a Document:**
 ```ts
-const response = await doc.delete()
+const response = await doc.delete();
 ```
 
-[build-img]:https://github.com/AndreasCaldewei/dynamometer/actions/workflows/release.yml/badge.svg
-
-[build-url]:https://github.com/AndreasCaldewei/dynamometer/actions/workflows/release.yml
-
-[downloads-img]:https://img.shields.io/npm/dt/dynamometer
-
-[downloads-url]:https://www.npmtrends.com/dynamometer
-
-[npm-img]:https://img.shields.io/npm/v/dynamometer
-
-[npm-url]:https://www.npmjs.com/package/dynamometer
-
-[issues-img]:https://img.shields.io/github/issues/AndreasCaldewei/dynamometer
-
-[issues-url]:https://github.com/AndreasCaldewei/dynamometer/issues
-
-[codecov-img]:https://codecov.io/gh/AndreasCaldewei/dynamometer/branch/main/graph/badge.svg
-
-[codecov-url]:https://codecov.io/gh/AndreasCaldewei/dynamometer
-
-[semantic-release-img]:https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
-
-[semantic-release-url]:https://github.com/semantic-release/semantic-release
-
-[commitizen-url]:http://commitizen.github.io/cz-cli/
-
-[commitizen-img]:https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
-
+---
 

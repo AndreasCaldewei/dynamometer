@@ -1,7 +1,7 @@
 import { Dynamometer } from '../src/Dynamometer';
 
 interface User {
-  name: string;
+  username: string;
 }
 
 interface Todo {
@@ -14,9 +14,9 @@ const db = Dynamometer.create({
 
 const userCol = () => db.collection<User>('USERS');
 const todoCol = (userId: string) =>
-  db.collection('USERS').doc(userId).collection<Todo>('TODOS');
+  userCol().doc(userId).collection<Todo>('TODOS');
 
-// USERS
+// USER
 export const getUsers = () => {
   return userCol().get();
 };
