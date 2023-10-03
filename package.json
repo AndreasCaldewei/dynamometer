@@ -1,6 +1,5 @@
 {
   "name": "dynamometer",
-  "version": "0.0.0-development",
   "description": "A library to easily work with DynamoDB with a single table design approach.",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

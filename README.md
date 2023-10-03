@@ -22,15 +22,15 @@
 
 Inspired by [Firestore SDK](https://firebase.google.com/docs/firestore).
 ---
-Managing your data with a single design approach in DynamodDB can sometimes be difficult. Dynamometer uses so-called "
-Collections" and "Docs" to structure your data in an comprehensible way.
+Managing your data with a single design approach in DynamodDB can sometimes be difficult. Dynamometer uses so-called "Collections" and "Docs" to structure your data in an comprehensible way.
+
+Dynamometer is intended for simple, low-complexity projects and is designed to allow an architect to immediately take a
+single-table approach with a DynamoDB table without having to think much about access patterns.
 
 ```ts
 const db = Dynamometer.create({
   tableName: "dataTable"
 })
-Dynamometer is intended for simple, low-complexity projects and is designed to allow an architect to immediately take a
-single-table approach with a DynamoDB table without having to think much about access patterns.
 
 db.collection('USERS')
   .doc("xspvLRiJ")
@@ -38,7 +38,6 @@ db.collection('USERS')
   .add({
     text: "Makes managing your data a breeze."
   })
-# Features
 
 ```
 
@@ -56,7 +55,6 @@ db.collection('USERS')
 ---
 
 ```bash
-npm install dynamometer
 npm install dynamometer       # npm
 yarn add dynamometer          # yarn
 pnpm add dynamometer          # pnpm
