@@ -4,57 +4,79 @@ interface User {
   username: string;
 }
 
-interface Todo {
-  text: string;
-}
-
 const db = Dynamometer.create({
   tableName: 'test',
 });
 
-const userCol = () => db.collection<User>('USERS');
-const todoCol = (userId: string) =>
-  userCol().doc(userId).collection<Todo>('TODOS');
-
 // USER
-export const getUsers = () => {
-  return userCol().get();
-};
+function createUserRepository() {
+  const users = db.collection<User>('USERS');
 
-export const getUserById = (userId: string) => {
-  return userCol().doc(userId).get();
-};
+  function getUsers() {
+    return users.get();
+  }
 
-export const createUser = (user: User) => {
-  return userCol().add(user);
-};
+  function getUserById(userId: string) {
+    return users.doc(userId).get();
+  }
 
-export const updateUser = (userId: string, user: User) => {
-  return userCol().doc(userId).update(user);
-};
+  function createUser(user: User) {
+    return users.add(user);
+  }
 
-export const deleteUser = (userId: string) => {
-  return userCol().doc(userId).delete();
-};
+  function updateUser(userId: string, user: User) {
+    return users.doc(userId).update(user);
+  }
+
+  function deleteUser(userId: string) {
+    return users.doc(userId).delete();
+  }
+
+  return {
+    getUsers,
+    getUserById,
+    createUser,
+    updateUser,
+    deleteUser,
+  };
+}
 
 // TODOS
 
-export const getTodosForUser = (userId: string) => {
-  return todoCol(userId).get();
-};
+interface Todo {
+  text: string;
+}
+function createTodoRepository(userId: string) {
+  const todos = db
+    .collection<User>('USER')
+    .doc(userId)
+    .collection<Todo>('TODO');
 
-export const getTodoForUser = (userId: string, todoId: string) => {
-  return todoCol(userId).doc(todoId).get();
-};
+  function getTodosForUser() {
+    return todos.get();
+  }
 
-export const createTodo = (userId: string, todo: Todo) => {
-  return todoCol(userId).add(todo);
-};
+  function getTodoForUser(todoId: string) {
+    return todos.doc(todoId).get();
+  }
 
-export const updateTodo = (userId: string, todoId: string, todo: Todo) => {
-  return todoCol(userId).doc(todoId).update(todo);
-};
+  function createTodo(todo: Todo) {
+    return todos.add(todo);
+  }
 
-export const deleteTodo = (userId: string, todoId: string) => {
-  return todoCol(userId).doc(todoId).delete();
-};
+  function updateTodo(todoId: string, todo: Todo) {
+    return todos.doc(todoId).update(todo);
+  }
+
+  function deleteTodo(todoId: string) {
+    return todos.doc(todoId).delete();
+  }
+
+  return {
+    getTodosForUser,
+    getTodoForUser,
+    createTodo,
+    updateTodo,
+    deleteTodo,
+  };
+}

@@ -1,4 +1,4 @@
-import { Dynamometer } from '../src';
+import { Dynamometer, Filters } from '../src';
 import { createTable } from './utils/createTable';
 import { deleteTable } from './utils/deleteTable';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
@@ -55,12 +55,11 @@ describe('Collection ', () => {
 
     const response = await commentsCollection.get();
 
-    expect(commentsCollection.path).toBe('POSTS#1234#COMMENTS');
+    expect(commentsCollection.path()).toBe('POSTS#1234#COMMENTS');
     expect(response?.length).toBe(1);
-    response.Items?.forEach((item, index) => {
+    response?.forEach((item, index) => {
       expect(item).toStrictEqual({
-        PK: 'POSTS#1234#COMMENTS',
-        SK: index.toString(),
+        id: '0',
         text: 'Test Comment',
       });
     });
@@ -82,7 +81,7 @@ describe('Collection ', () => {
 
     const response = await commentsCollection.get();
 
-    expect(commentsCollection.path).toBe('POSTS#1234#COMMENTS');
+    expect(commentsCollection.path()).toBe('POSTS#1234#COMMENTS');
     expect(response?.length).toBe(2);
     response?.forEach((item, index) => {
       expect(item).toStrictEqual({
@@ -93,41 +92,32 @@ describe('Collection ', () => {
   });
 
   test('beginsWith', async () => {
-    const commentsCollectionPublished = dynamometer
+    const comments = dynamometer
       .collection('POSTS')
       .doc('1234')
-      .collection('COMMENTS', { prefix: 'PUBLISHED' });
+      .collection('COMMENTS');
 
-    await commentsCollectionPublished.add({
+    await comments.doc('PUBLISHED:0').set({
+      text: 'Test Comment',
+    });
+    await comments.doc('PUBLISHED:1').set({
       text: 'Test Comment',
     });
 
-    await commentsCollectionPublished.add({
+    await comments.doc('UNPUBLISHED:0').set({
+      text: 'Test Comment',
+    });
+    await comments.doc('UNPUBLISHED:1').set({
       text: 'Test Comment',
     });
 
-    const commentsCollectionUnpublished = dynamometer
-      .collection('POSTS')
-      .doc('1234')
-      .collection('COMMENTS', { prefix: 'UNPUBLISHED' });
+    const response = await comments.get(Filters.BeginsWith('PUBLISHED'));
 
-    await commentsCollectionUnpublished.add({
-      text: 'Test Comment',
-    });
-
-    await commentsCollectionUnpublished.add({
-      text: 'Test Comment',
-    });
-
-    const response = await commentsCollectionPublished
-      .beginsWith('PUBLISHED')
-      .get();
-
-    expect(commentsCollectionPublished.path).toBe('POSTS#1234#COMMENTS');
+    expect(comments.path()).toBe('POSTS#1234#COMMENTS');
     expect(response?.length).toBe(2);
     response?.forEach((item, index) => {
       expect(item).toStrictEqual({
-        id: `PUBLISHED#${index.toString()}`,
+        id: `PUBLISHED:${index.toString()}`,
         text: 'Test Comment',
       });
     });
@@ -136,6 +126,6 @@ describe('Collection ', () => {
   test('doc', () => {
     const doc = dynamometer.collection('POSTS').doc('1234');
 
-    expect(doc.path).toBe('POSTS#1234');
+    expect(doc.path()).toBe('POSTS#1234');
   });
 });

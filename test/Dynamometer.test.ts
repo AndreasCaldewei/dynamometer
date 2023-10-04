@@ -44,22 +44,11 @@ describe('Dynamometer', () => {
     expect(dynamometer.config.idField).toEqual('customID');
   });
 
-  it('should create a Dynamometer instance from an existing DynamoDBDocument', () => {
-    const mockDynamoDBDocument = {}; // Mock DynamoDBDocument instance
-    const dynamometer = Dynamometer.fromDynamoDBDocument(
-      mockDynamoDBDocument,
-      mockConfig
-    );
-
-    expect(DynamoDBDocument.from).not.toHaveBeenCalled();
-    expect(dynamometer.dynamoDBDocument).toBe(mockDynamoDBDocument);
-  });
-
   it('should create and return a new Collection instance', () => {
     const dynamometer = Dynamometer.create(mockConfig);
     const collection = dynamometer.collection('testCollection');
 
     expect(collection).toBeDefined();
-    expect(collection.path).toEqual('testCollection');
+    expect(collection.path()).toEqual('testCollection');
   });
 });

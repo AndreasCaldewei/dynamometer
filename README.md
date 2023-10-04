@@ -77,7 +77,7 @@ const db = Dynamometer.create({
 
 ---
 
-### Collection
+### CollectionReference
 
 A collection holds a number of items.
 
@@ -123,7 +123,7 @@ collection.doc("123").add({
 
 ---
 
-### Document
+### DocumentReference
 
 A document is an item of a collection. It offers CRUD methodes.
 

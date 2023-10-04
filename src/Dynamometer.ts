@@ -7,8 +7,9 @@
 
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-
-import { Collection, CollectionArgs } from './Collection';
+import { CollectionReference } from './CollectionReference';
+import { DatabaseClient, DatabaseHooks } from './DatabaseClient';
+import { createHooks } from 'hookable';
 
 /**
  * Configuration type for Dynamometer.
@@ -36,10 +37,11 @@ const defaultConfig = {
   sortKey: 'SK',
   idField: 'id',
   generateId: () => crypto.randomUUID(),
-};
+} as const;
 
 export class Dynamometer {
-  readonly dynamoDBDocument: DynamoDBDocument;
+  readonly hooks = createHooks<DatabaseHooks>();
+  readonly database: DatabaseClient;
 
   /**
    * Private constructor to enforce the use of static factory methods.
@@ -51,7 +53,9 @@ export class Dynamometer {
     ddbDocClient: DynamoDBDocument,
     readonly config: Required<DynamometerConfig>
   ) {
-    this.dynamoDBDocument = ddbDocClient;
+    this.database = new DatabaseClient(this, ddbDocClient);
+
+    this.hooks.hook('delete:after', args => {});
   }
 
   /**
@@ -109,14 +113,16 @@ export class Dynamometer {
   /**
    * Create and return a new Collection instance.
    *
-   * @param collectionPath - The path for the collection.
+   * @param collectionName - The path for the collection.
    * @param args - Optional arguments for the collection.
    * @returns A new Collection instance.
    */
-  collection<T>(
-    collectionPath: string,
-    args?: CollectionArgs
-  ): Collection<T, undefined> {
-    return new Collection<T, undefined>(this, collectionPath);
+  collection<T>(id: string): CollectionReference<T> {
+    return new CollectionReference<T>(this, id, undefined);
+  }
+
+  use(plugin: (dynamometer: Dynamometer) => void) {
+    plugin(this);
+    return this;
   }
 }

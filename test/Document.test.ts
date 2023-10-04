@@ -1,4 +1,4 @@
-import { Dynamometer } from '../src';
+import { Dynamometer, LoggerPlugin, QueryTime } from '../src';
 import { deleteTable } from './utils/deleteTable';
 import { createTable } from './utils/createTable';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
@@ -41,6 +41,8 @@ describe('Document ', () => {
         return uuidCounter.toString();
       },
     });
+    dynamometer.use(LoggerPlugin);
+    dynamometer.use(QueryTime);
   });
 
   test('set', async () => {
