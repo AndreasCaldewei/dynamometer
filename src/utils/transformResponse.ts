@@ -24,5 +24,9 @@ export const transformResponse = <T>(
     ...rest
   } = response;
 
-  return { ...rest, [config.idField]: sortKey } as T;
+  return {
+    ...rest,
+    ...(config.includeIndex && { [config.partitionKey]: partitionKey }),
+    ...(config.includeIndex && { [config.sortKey]: sortKey }),
+  } as T;
 };

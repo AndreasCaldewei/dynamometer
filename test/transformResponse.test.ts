@@ -22,7 +22,6 @@ describe('transformResponse', () => {
     expect(transformed).toEqual({
       name: 'John Doe',
       age: 30,
-      id: 'myDocument',
     });
   });
 
@@ -33,8 +32,6 @@ describe('transformResponse', () => {
     };
 
     const transformed = transformResponse(response, config);
-    expect(transformed).toEqual({
-      id: 'myDocument',
-    });
+    expect(transformed).toEqual({});
   });
 });

@@ -11,7 +11,7 @@ import { checkCollectionPath } from './utils/checkCollectionPath';
 import { transformResponse } from './utils/transformResponse';
 import { FilterFunction } from './Filters';
 
-export class CollectionReference<Type> {
+export class CollectionReference<Type = any> {
   private readonly _parent; // Reference to the parent DocumentReference
 
   /**
@@ -74,27 +74,7 @@ export class CollectionReference<Type> {
    * @param {string} id - The ID for the new document (optional, a generated ID will be used if not provided).
    * @returns {DocumentReference<Type>} - A reference to the new document.
    */
-  doc(
-    id: string = this.dynamometer.config.generateId()
-  ): DocumentReference<Type> {
+  doc(id?: string): DocumentReference<Type> {
     return new DocumentReference(this.dynamometer, this, id);
-  }
-
-  /**
-   * Adds a new document to the collection with the provided data.
-   *
-   * @param {{ $id?: string } & Type} data - The data to be added to the new document.
-   * @returns {Promise<DocumentReference<Type>>} - A promise that resolves to a reference to the new document.
-   */
-  async add(data: { $id?: string } & Type): Promise<DocumentReference<Type>> {
-    const { $id = this.dynamometer.config.generateId(), ..._data } = data;
-
-    await this.dynamometer.database.put({
-      partitionKey: this.path(),
-      sortKey: $id,
-      data: _data,
-    });
-
-    return new DocumentReference<Type>(this.dynamometer, this, $id);
   }
 }

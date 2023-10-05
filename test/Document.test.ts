@@ -1,11 +1,11 @@
-import { Dynamometer, LoggerPlugin, QueryTime } from '../src';
-import { deleteTable } from './utils/deleteTable';
-import { createTable } from './utils/createTable';
+import { Dynamometer } from '../src';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { deleteTable } from './utils/deleteTable';
+import { createTable } from './utils/createTable';
 import { delay } from './utils/delay';
 
-describe('Document ', () => {
+describe('Document', () => {
   const tableName = 'Test';
   let dynamometer: Dynamometer;
 
@@ -16,7 +16,6 @@ describe('Document ', () => {
     await createTable();
     await delay();
 
-    let uuidCounter = -1;
     const dynamoDBDocument = DynamoDBDocument.from(
       new DynamoDBClient({
         endpoint: 'http://localhost:8000/',
@@ -34,103 +33,90 @@ describe('Document ', () => {
       }
     );
 
+    let uuidCounter = -1;
     dynamometer = Dynamometer.fromDynamoDBDocument(dynamoDBDocument, {
       tableName,
-      generateId() {
-        uuidCounter = uuidCounter + 1;
-        return uuidCounter.toString();
-      },
+      generateId: () => (++uuidCounter).toString(),
     });
-    dynamometer.use(LoggerPlugin);
-    dynamometer.use(QueryTime);
   });
 
-  test('set', async () => {
-    const doc = dynamometer.collection('POSTS').doc('1234');
+  afterEach(async () => {
+    await delay();
+    await deleteTable();
+    await delay();
+  });
 
-    await doc.set({
-      name: 'test',
-    });
+  const setupDocument = (id?: string) =>
+    dynamometer.collection('POSTS').doc(id);
 
-    await doc.set({
-      test: 'test',
-    });
+  test('should set and overwrite data', async () => {
+    const doc = setupDocument('1234');
+    await doc.set({ name: 'test' });
+    await doc.set({ test: 'test' });
 
     const response = await doc.get();
-
-    expect(response).toStrictEqual({
-      id: '1234',
-      test: 'test',
-    });
+    expect(response).toStrictEqual({ id: '0', test: 'test' });
   });
 
-  test('get', async () => {
-    const doc = dynamometer.collection('POSTS').doc('1234');
-    await doc.set({
-      name: 'test',
-    });
+  test('should set data with generated UUID', async () => {
+    const doc = setupDocument();
+    await doc.set({ name: 'test' });
+    await doc.set({ test: 'test2' });
+
     const response = await doc.get();
-    expect(response).toStrictEqual({
-      id: '1234',
-      name: 'test',
-    });
+    expect(response).toStrictEqual({ id: '0', test: 'test2' });
   });
 
-  test('delete', async () => {
-    const doc = dynamometer.collection('POSTS').doc('1234');
-    await doc.set({
-      name: 'test',
-    });
+  test('should retrieve data', async () => {
+    const doc = setupDocument('1234');
+    await doc.set({ name: 'test' });
+
+    const response = await doc.get();
+    expect(response).toStrictEqual({ id: '0', name: 'test' });
+  });
+
+  test('should delete data', async () => {
+    const doc = setupDocument('1234');
+    await doc.set({ name: 'test' });
     await doc.delete();
+
     const response = await doc.get();
     expect(response).toBe(null);
   });
 
-  test('update', async () => {
-    const doc = dynamometer.collection('POSTS').doc('1234');
-    await doc.set({
-      name: 'test',
-      text: 'test',
-    });
-    await doc.update({
-      name: 'name',
-      property: 'property',
-    });
+  test('should update data', async () => {
+    const doc = setupDocument('1234');
+    await doc.set({ name: 'test', text: 'test' });
+    await doc.update({ name: 'name', property: 'property' });
+
     const response = await doc.get();
     expect(response).toStrictEqual({
-      id: '1234',
+      id: '0',
       name: 'name',
       property: 'property',
       text: 'test',
     });
   });
 
-  test('update - nested', async () => {
-    const doc = dynamometer.collection('POSTS').doc('1234');
+  test('should update nested data', async () => {
+    const doc = setupDocument('1234');
     await doc.set({
       name: 'test',
       text: 'test',
-      obj: {
-        name: 'test',
-        text: 'test',
-      },
+      obj: { name: 'test', text: 'test' },
     });
     await doc.update({
       name: 'name',
       property: 'property',
-      obj: {
-        text: 'text',
-      },
+      obj: { text: 'text' },
     });
+
     const response = await doc.get();
     expect(response).toStrictEqual({
-      id: '1234',
+      id: '0',
       name: 'name',
       property: 'property',
-      obj: {
-        name: 'test',
-        text: 'text',
-      },
+      obj: { name: 'test', text: 'text' },
       text: 'test',
     });
   });

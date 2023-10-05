@@ -13,8 +13,9 @@ import { transformResponse } from './utils/transformResponse';
 import merge from 'deepmerge';
 import { FilterFunction } from './Filters';
 
-export class DocumentReference<Type> {
+export class DocumentReference<Type = any> {
   private _parent; // Reference to the parent CollectionReference
+  private id: string;
 
   /**
    * Creates a new DocumentReference instance.
@@ -26,11 +27,16 @@ export class DocumentReference<Type> {
   constructor(
     private readonly dynamometer: Dynamometer,
     parent: CollectionReference<Type>,
-    private readonly documentId: string
+    private readonly documentId?: string
   ) {
+    this.id = this.dynamometer.config.generateId();
     this._parent = parent;
     // Ensure the document path is valid
     checkDocumentPath(this.path(), dynamometer.config.delimiter);
+  }
+
+  private get sortKey() {
+    return this.documentId ?? this.id;
   }
 
   /**
@@ -40,7 +46,7 @@ export class DocumentReference<Type> {
    */
   path(): string {
     return `${this.parent()?.path()}${this.dynamometer.config.delimiter}${
-      this.documentId
+      this.sortKey
     }`;
   }
 
@@ -75,7 +81,7 @@ export class DocumentReference<Type> {
   async get(): Promise<Type | null> {
     const response = await this.dynamometer.database.get({
       partitionKey: this.parent().path(),
-      sortKey: this.documentId,
+      sortKey: this.sortKey,
     });
 
     if (!response.Item) return null;
@@ -92,8 +98,11 @@ export class DocumentReference<Type> {
   async set(data: Type): Promise<void> {
     await this.dynamometer.database.put({
       partitionKey: this.parent().path(),
-      sortKey: this.documentId,
-      data,
+      sortKey: this.sortKey,
+      data: {
+        ...data,
+        [this.dynamometer.config.idField]: this.id,
+      },
     });
   }
 
@@ -105,7 +114,7 @@ export class DocumentReference<Type> {
   async delete(): Promise<void> {
     await this.dynamometer.database.delete({
       partitionKey: this.parent().path(),
-      sortKey: this.documentId,
+      sortKey: this.sortKey,
     });
   }
 

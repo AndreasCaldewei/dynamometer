@@ -10,7 +10,7 @@ const db = Dynamometer.create({
 
 // USER
 function createUserRepository() {
-  const users = db.collection<User>('USERS');
+  const users = db.collection<User>('USER');
 
   function getUsers() {
     return users.get();
@@ -21,7 +21,7 @@ function createUserRepository() {
   }
 
   function createUser(user: User) {
-    return users.add(user);
+    return users.doc().set(user);
   }
 
   function updateUser(userId: string, user: User) {
@@ -61,7 +61,7 @@ function createTodoRepository(userId: string) {
   }
 
   function createTodo(todo: Todo) {
-    return todos.add(todo);
+    return todos.doc().set(todo);
   }
 
   function updateTodo(todoId: string, todo: Todo) {

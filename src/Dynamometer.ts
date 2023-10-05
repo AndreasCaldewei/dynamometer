@@ -28,6 +28,7 @@ export type DynamometerConfig = {
   partitionKey?: string;
   sortKey?: string;
   idField?: string;
+  includeIndex?: boolean;
 };
 
 // Default configuration values for Dynamometer
@@ -37,6 +38,7 @@ const defaultConfig = {
   sortKey: 'SK',
   idField: 'id',
   generateId: () => crypto.randomUUID(),
+  includeIndex: false,
 } as const;
 
 export class Dynamometer {
@@ -83,6 +85,7 @@ export class Dynamometer {
       partitionKey: config.partitionKey ?? defaultConfig.partitionKey,
       sortKey: config.sortKey ?? defaultConfig.sortKey,
       idField: config.idField ?? defaultConfig.idField,
+      includeIndex: config.includeIndex ?? defaultConfig.includeIndex,
     });
   }
 
@@ -106,6 +109,7 @@ export class Dynamometer {
         partitionKey: config.partitionKey ?? defaultConfig.partitionKey,
         sortKey: config.sortKey ?? defaultConfig.sortKey,
         idField: config.idField ?? defaultConfig.idField,
+        includeIndex: config.includeIndex ?? defaultConfig.includeIndex,
       })
     );
   }
@@ -113,8 +117,7 @@ export class Dynamometer {
   /**
    * Create and return a new Collection instance.
    *
-   * @param collectionName - The path for the collection.
-   * @param args - Optional arguments for the collection.
+   * @param id - The id for the collection.
    * @returns A new Collection instance.
    */
   collection<T>(id: string): CollectionReference<T> {
